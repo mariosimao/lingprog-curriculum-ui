@@ -93,7 +93,9 @@ export default {
           data.user.updateProfile({
             displayName: this.name,
           }).then(() => {
-            this.$store.dispatch('user/updateUser', data.user);
+            firebase.auth().currentUser.reload().then(() => {
+              this.$store.dispatch('user/updateUser', data.user);
+            });
           });
         }).catch((error) => {
           switch (error.code) {

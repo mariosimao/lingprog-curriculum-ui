@@ -24,6 +24,7 @@ export default {
       commit('SET_LOGGED_IN', user !== null);
       if (user) {
         commit('SET_USER', {
+          uid: user.uid,
           displayName: user.displayName,
           email: user.email,
         });

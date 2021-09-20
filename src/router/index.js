@@ -34,9 +34,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.authRequired)) {
-    if (firebase.auth().currentUser) {
-      next();
-    } else {
+    if (!firebase.auth().currentUser) {
       next({ name: 'login' });
     }
   }
@@ -44,8 +42,6 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.anonymousRequired)) {
     if (firebase.auth().currentUser) {
       next({ name: 'home' });
-    } else {
-      next();
     }
   }
 

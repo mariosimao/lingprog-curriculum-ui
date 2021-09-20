@@ -7,8 +7,14 @@ import firebase from './plugins/firebase';
 
 firebase.auth().onAuthStateChanged((user) => {
   store.dispatch('user/updateUser', user);
-  const routeName = firebase.auth().currentUser ? 'home' : 'login';
-  router.replace({ name: routeName });
+  if (firebase.auth().currentUser) {
+    router.replace({ name: 'home' });
+  } else {
+    const authRequired = router.currentRoute?.meta?.authRequired;
+    if (authRequired) {
+      router.replace({ name: 'login' });
+    }
+  }
 });
 
 Vue.config.productionTip = false;
