@@ -1,3 +1,5 @@
+import { createStudent } from '../../api/student';
+
 export default {
   namespaced: true,
   state: {
@@ -20,6 +22,9 @@ export default {
     },
   },
   actions: {
+    registerUser(context, uid) {
+      return createStudent(uid);
+    },
     updateUser({ commit }, user) {
       commit('SET_LOGGED_IN', user !== null);
       if (user) {

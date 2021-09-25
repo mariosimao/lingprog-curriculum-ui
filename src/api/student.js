@@ -6,6 +6,7 @@ const createStudent = (firebaseUid) => {
   return client.post(path, { id: firebaseUid });
 };
 
-export default {
+export {
+  // eslint-disable-next-line import/prefer-default-export
   createStudent,
 };

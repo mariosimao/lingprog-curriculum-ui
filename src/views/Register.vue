@@ -90,14 +90,17 @@ export default {
       firebase.auth()
         .createUserWithEmailAndPassword(this.email, this.password)
         .then((data) => {
-          data.user.updateProfile({
-            displayName: this.name,
-          }).then(() => {
-            firebase.auth().currentUser.reload().then(() => {
-              this.$store.dispatch('user/updateUser', data.user);
-            });
-          });
-        }).catch((error) => {
+          data.user.updateProfile({ displayName: this.name });
+          return data.user;
+        })
+        .then((user) => {
+          this.$store.dispatch('user/registerUser', user.uid);
+          return user;
+        })
+        .then(() => {
+          this.$store.dispatch('user/updateUser', firebase.auth.currentUser);
+        })
+        .catch((error) => {
           switch (error.code) {
             case 'auth/invalid-email':
               this.error = { email: 'Invalid email.' };
