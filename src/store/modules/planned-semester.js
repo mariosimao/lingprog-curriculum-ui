@@ -9,13 +9,17 @@ export default {
   namespaced: true,
   state: {
     semesters: [],
-    semestersStatus: {},
+    semestersStatus: 'pending',
+    semesterStatus: {}, // Status per semester
   },
   getters: {
     semesters(state) {
-      return state.user;
+      return state.semesters;
     },
     semester: (state) => (semesterId) => (state.semesters.find((s) => s.id === semesterId)),
+    areSemestersLoaded(state) {
+      return state.semestersStatus === 'loaded';
+    },
   },
   mutations: {
     SET_SEMESTERS(state, semesters) {
@@ -42,9 +46,9 @@ export default {
     REMOVE_SEMESTER(state, semesterId) {
       state.semesters = state.semesters.filter((s) => (s.id !== semesterId));
 
-      state.semestersStatus = state.semestersStatus.filter(
-        (status, id) => (id !== semesterId),
-      );
+      const status = { ...state.semesterStatus };
+      delete status[semesterId];
+      state.semesterStatus = status;
     },
     UPDATE_SEMESTER(state, semester) {
       const index = state.semesters.findIndex((s) => (s.id === semester.id));
@@ -52,28 +56,41 @@ export default {
       state.semesters[index] = semester;
     },
     RESET_SEMESTERS_STATUS(state) {
-      const semestersStatus = {};
+      const semesterStatus = {};
       state.semesters.forEach((semester) => {
-        semestersStatus[semester.id] = 'loaded';
+        semesterStatus[semester.id] = 'loaded';
       });
 
-      state.semestersStatus = semestersStatus;
+      state.semesterStatus = semesterStatus;
     },
     SET_SEMESTER_LOADING(state, semesterId) {
-      state.semestersStatus[semesterId] = 'loading';
+      state.semesterStatus = {
+        ...state.semesterStatus,
+        [semesterId]: 'loading',
+      };
     },
     SET_SEMESTER_LOADED(state, semesterId) {
-      state.semestersStatus[semesterId] = 'loaded';
+      state.semesterStatus = {
+        ...state.semesterStatus,
+        [semesterId]: 'loaded',
+      };
+    },
+    SET_SEMESTERS_STATUS(state, status) {
+      state.semesterStatus = status;
     },
   },
   actions: {
     fetchSemesters({ commit }, studentId) {
+      commit('SET_SEMESTERS_STATUS', 'loading');
       getSemesters(studentId).then((semesters) => {
         commit('SET_SEMESTERS', semesters);
+        commit('SET_SEMESTERS_STATUS', 'loaded');
+      }).catch(() => {
+        commit('SET_SEMESTERS_STATUS', 'error');
       });
     },
-    addSemester({ commit }, { studentId, startDate, endDate }) {
-      createSemester(studentId, startDate, endDate).then((semester) => {
+    planSemester({ commit }, { studentId, startDate, endDate }) {
+      return createSemester(studentId, startDate, endDate).then((semester) => {
         commit('SET_SEMESTER_LOADED', semester.id);
         commit('ADD_SEMESTER', semester);
       });
@@ -92,7 +109,7 @@ export default {
     },
     removeSemester({ commit }, { studentId, semesterId }) {
       commit('SET_SEMESTER_LOADING', semesterId);
-      removeSemester(studentId, semesterId).then(() => {
+      return removeSemester(studentId, semesterId).then(() => {
         commit('REMOVE_SEMESTER', semesterId);
       });
     },

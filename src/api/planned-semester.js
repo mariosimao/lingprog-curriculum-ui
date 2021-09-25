@@ -9,7 +9,7 @@ const getSemesters = (studentId) => {
 const createSemester = (studentId, startDate, endDate) => {
   const path = `/students/${studentId}/semesters`;
 
-  return client.post(path, { startDate, endDate }).then((response) => (response.data.semester));
+  return client.post(path, { startDate, endDate }).then((response) => (response.data));
 };
 
 const updateSemester = (studentId, semesterId, name, startDate, endDate) => {
