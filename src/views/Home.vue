@@ -8,6 +8,8 @@
         <StudentSemester
           :id="semester.id"
           :name="semester.name"
+          :start-date="semester.startDate"
+          :end-date="semester.endDate"
         />
       </v-col>
       <v-col>

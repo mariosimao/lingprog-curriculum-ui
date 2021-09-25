@@ -17,6 +17,7 @@ export default {
       return state.semesters;
     },
     semester: (state) => (semesterId) => (state.semesters.find((s) => s.id === semesterId)),
+    isSemesterLoading: (state) => (semesterId) => (state.semesterStatus[semesterId] === 'loading'),
     areSemestersLoaded(state) {
       return state.semestersStatus === 'loaded';
     },
@@ -53,7 +54,10 @@ export default {
     UPDATE_SEMESTER(state, semester) {
       const index = state.semesters.findIndex((s) => (s.id === semester.id));
 
-      state.semesters[index] = semester;
+      const semesters = [...state.semesters];
+      semesters[index] = semester;
+
+      state.semesters = semesters;
     },
     RESET_SEMESTERS_STATUS(state) {
       const semesterStatus = {};
@@ -96,15 +100,19 @@ export default {
       });
     },
     updateSemester({ commit }, { studentId, semester }) {
-      const oldSemester = semester(semester.id);
-
       commit('SET_SEMESTER_LOADING', semester.id);
-      commit('UPDATE_SEMESTER', semester);
-      updateSemester(studentId, ...semester).then(() => {
+      return updateSemester(
+        studentId,
+        semester.id,
+        semester.name,
+        semester.startDate,
+        semester.endDate,
+      ).then(() => {
+        commit('UPDATE_SEMESTER', semester);
         commit('SET_SEMESTER_LOADED', semester.id);
-      }).catch(() => {
-        commit('UPDATE_SEMESTER', oldSemester);
+      }).catch((e) => {
         commit('SET_SEMESTER_LOADED', semester.id);
+        throw e;
       });
     },
     removeSemester({ commit }, { studentId, semesterId }) {

@@ -32,7 +32,7 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item @click="operation = 'edit'">
+              <v-list-item @click="startEdit">
                 <v-list-item-title>
                   <v-icon small left>mdi-pencil</v-icon>
                   Edit
@@ -58,19 +58,21 @@
       <!-- Edit Start -->
       <v-expand-transition>
         <div v-if="operation === 'edit'">
+          <p class="error--text mb-0">{{ editError }}</p>
           <div class="d-flex align-center">
             <v-text-field
               v-model="newName"
               dense
               hide-details
+              :error-messages="editError"
               prepend-icon="mdi-text"
               placeholder="Semester name"
             />
-            <v-btn x-small icon>
-              <v-icon @click="operation = 'view'">mdi-close</v-icon>
+            <v-btn x-small icon @click="cancelEdit" :disabled="isSemesterLoading(id)">
+              <v-icon>mdi-close</v-icon>
             </v-btn>
-            <v-btn small icon color="green">
-              <v-icon @click="operation = 'view'">mdi-check</v-icon>
+            <v-btn small icon color="green" @click="saveEdit" :loading="isSemesterLoading(id)">
+              <v-icon>mdi-check</v-icon>
             </v-btn>
           </div>
           <v-menu
@@ -88,15 +90,16 @@
                 prepend-icon="mdi-calendar"
                 readonly
                 hide-details
+                :error-messages="editError"
                 v-bind="attrs"
                 v-on="on"
-              ></v-text-field>
+              />
             </template>
             <v-date-picker
               v-model="newStart"
               no-title
               @input="startPicker = false"
-            ></v-date-picker>
+            />
           </v-menu>
           <v-menu
             v-model="endPicker"
@@ -113,15 +116,16 @@
                 prepend-icon="mdi-calendar"
                 hide-details
                 readonly
+                :error-messages="editError"
                 v-bind="attrs"
                 v-on="on"
-              ></v-text-field>
+              />
             </template>
             <v-date-picker
               v-model="newEnd"
               no-title
               @input="endPicker = false"
-            ></v-date-picker>
+            />
           </v-menu>
         </div>
       </v-expand-transition>
@@ -169,11 +173,11 @@ export default {
     },
     startDate: {
       type: String,
-      default: '2021-01-01',
+      default: '',
     },
     endDate: {
       type: String,
-      default: '2021-05-31',
+      default: '',
     },
   },
   data: () => ({
@@ -184,9 +188,11 @@ export default {
     newEnd: '',
     startPicker: false,
     endPicker: false,
+    editError: null,
   }),
   computed: {
     ...mapGetters('user', ['user']),
+    ...mapGetters('plannedSemester', ['isSemesterLoading']),
     attempts: {
       get() {
         return this.$store.getters.semesterAttempts(this.id);
@@ -199,6 +205,7 @@ export default {
   methods: {
     ...mapActions(['moveSubjectAttempt']),
     ...mapActions('plannedSemester', [
+      'updateSemester',
       'removeSemester',
     ]),
     moveSubject(e) {
@@ -221,11 +228,35 @@ export default {
         semesterId: this.id,
       });
     },
-  },
-  created() {
-    this.newName = this.name;
-    this.newStart = this.startDate;
-    this.newEnd = this.endDate;
+    startEdit() {
+      this.newName = this.name;
+      this.newStart = this.startDate;
+      this.newEnd = this.endDate;
+      this.operation = 'edit';
+    },
+    cancelEdit() {
+      this.newName = this.name;
+      this.newStart = this.startDate;
+      this.newEnd = this.endDate;
+      this.editError = null;
+      this.operation = 'view';
+    },
+    saveEdit() {
+      this.editError = null;
+      this.updateSemester({
+        studentId: this.user.data.uid,
+        semester: {
+          id: this.id,
+          name: this.newName,
+          startDate: this.newStart,
+          endDate: this.newEnd,
+        },
+      }).then(() => {
+        this.operation = 'view';
+      }).catch((e) => {
+        this.editError = e.response.data.error.message;
+      });
+    },
   },
 };
 </script>
