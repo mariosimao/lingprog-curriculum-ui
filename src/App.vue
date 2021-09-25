@@ -22,6 +22,18 @@
     </v-app-bar>
     <v-main class="blue-grey lighten-5">
       <v-container fill-height fluid>
+        <notifications class="ma-3" position="top right">
+          <template slot="body" slot-scope="{ item }">
+            <v-alert
+              type="error"
+              border="left"
+              dense
+              outlined
+            >
+              {{ item.text }}
+            </v-alert>
+          </template>
+        </notifications>
         <router-view/>
       </v-container>
     </v-main>
