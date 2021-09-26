@@ -12,7 +12,7 @@ const createSubject = (code, name, credits) => {
   return client.post(path, { code, name, credits }).then((response) => (response.data.subject.id));
 };
 
-export default {
+export {
   getSubjects,
   createSubject,
 };

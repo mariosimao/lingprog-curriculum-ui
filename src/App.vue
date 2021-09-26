@@ -7,7 +7,8 @@
       dark
       color="primary"
     >
-      My Curriculum
+      <v-btn text :to="{ name: 'home' }" class="ma-2">My Curriculum</v-btn>
+      <v-btn text :to="{ name: 'subjects' }">Subjects</v-btn>
       <v-spacer/>
       <div v-if="user.data">
         {{ user.data.displayName }} ({{ user.data.email }})
@@ -21,7 +22,7 @@
       </v-btn>
     </v-app-bar>
     <v-main class="blue-grey lighten-5">
-      <v-container fill-height fluid>
+      <v-container fluid>
         <notifications class="ma-3" position="top right">
           <template slot="body" slot-scope="{ item }">
             <v-alert
