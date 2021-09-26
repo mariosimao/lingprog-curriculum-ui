@@ -1,18 +1,10 @@
 <template>
   <v-card
-    :disabled="isAttemptLoading(id)"
-    :loading="isAttemptLoading(id)"
     :class="cardClasses"
     :color="cardColor"
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
   >
-    <template slot="progress">
-      <v-progress-linear
-        height="4"
-        indeterminate
-      />
-    </template>
     <v-card-text class="pa-3 pr-1">
       <div class="d-flex">
         <div class="text-caption my-0">
@@ -24,9 +16,36 @@
           • <span :class="`${gradeColor}--text text--darken-3`">{{ grade }}</span>
         </div>
         <v-spacer/>
-        <v-btn v-if="showSettings" x-small icon>
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
+        <v-menu
+          bottom
+          left
+          offset-y
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              x-small
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item @click="startEdit">
+              <v-list-item-title>
+                <v-icon small left>mdi-pencil</v-icon>
+                Edit
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="remove">
+              <v-list-item-title>
+                <v-icon small left>mdi-delete</v-icon>
+                Delete
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <p class="font-weight-bold text-body-1 my-0">
         {{ subject(subjectId).name }}
@@ -39,12 +58,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'SubjectAttempt',
   props: {
     id: {
+      type: String,
+      default: '',
+    },
+    semesterId: {
       type: String,
       default: '',
     },
@@ -66,7 +89,7 @@ export default {
     cardClasses: ['my-3', 'attempt-card'],
   }),
   computed: {
-    ...mapGetters(['isAttemptLoading']),
+    ...mapGetters('user', ['userId']),
     ...mapGetters('subject', ['subject']),
     gradeColor() {
       if (this.grade >= 5) {
@@ -102,6 +125,16 @@ export default {
     },
   },
   methods: {
+    ...mapActions('subjectAttempt', ['removeSubjectAttempt']),
+    startEdit() {
+    },
+    remove() {
+      this.removeSubjectAttempt({
+        studentId: this.userId,
+        semesterId: this.semesterId,
+        attemptId: this.id,
+      });
+    },
   },
 };
 </script>

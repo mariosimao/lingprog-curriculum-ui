@@ -140,6 +140,7 @@
       >
         <SubjectAttempt
           :id="attempt.id"
+          :semester-id="id"
           :subject-id="attempt.subjectId"
           :professor="attempt.professor"
           :grade="attempt.grade"
@@ -211,36 +212,13 @@ export default {
     ...mapGetters('plannedSemester', ['isSemesterLoading']),
     ...mapGetters('subject', ['subjects']),
     ...mapGetters('subjectAttempt', ['semesterAttempts', 'areSemesterAttemptsLoaded']),
-    attempts: {
-      get() {
-        return this.$store.getters.semesterAttempts(this.id);
-      },
-      set(attempts) {
-        this.$store.commit('UPDATE_SEMESTER_ATTEMPTS', { semesterId: this.id, attempts });
-      },
-    },
   },
   methods: {
-    ...mapActions(['moveSubjectAttempt']),
     ...mapActions('plannedSemester', [
       'updateSemester',
       'removeSemester',
     ]),
     ...mapActions('subjectAttempt', ['fetchSemesterAttempts', 'addSubjectAttempt']),
-    moveSubject(e) {
-      // console.log(e);
-      const attemptId = this.attempts[e.newIndex].id;
-      const newSemesterId = this.id;
-      // console.log(this.attempts[e.newIndex].subject.name);
-      // console.log(this.name);
-      this.moveSubjectAttempt({ attemptId, newSemesterId });
-    },
-    onDragStart(e) {
-      e.target.classList.add('grabbing');
-    },
-    onDragEnd(e) {
-      e.target.classList.remove('grabbing');
-    },
     deleteSemester() {
       this.removeSemester({
         studentId: this.userId,
@@ -294,9 +272,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.grabbing * {
-  cursor: grabbing !important;
-};
-</style>

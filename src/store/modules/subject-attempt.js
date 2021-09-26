@@ -1,4 +1,4 @@
-import { getSemesterAttempts, addAttempt } from '../../api/subject-attempt';
+import { getSemesterAttempts, addAttempt, removeAttempt } from '../../api/subject-attempt';
 
 export default {
   namespaced: true,
@@ -26,6 +26,14 @@ export default {
 
       state.attempts = attempts;
     },
+    REMOVE_SEMESTER_ATTEMPT(state, { semesterId, attemptId }) {
+      const attempts = state.attempts[semesterId].filter((attempt) => (attempt.id !== attemptId));
+
+      state.attempts = {
+        ...state.attempts,
+        [semesterId]: attempts,
+      };
+    },
   },
   actions: {
     fetchSemesterAttempts({ commit }, { studentId, semesterId }) {
@@ -44,6 +52,11 @@ export default {
           professor: null,
         };
         commit('ADD_SEMESTER_ATTEMPT', { semesterId, attempt });
+      });
+    },
+    removeSubjectAttempt({ commit }, { studentId, semesterId, attemptId }) {
+      return removeAttempt(studentId, semesterId, attemptId).then(() => {
+        commit('REMOVE_SEMESTER_ATTEMPT', { semesterId, attemptId });
       });
     },
   },
