@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import user from './modules/user';
 import plannedSemester from './modules/planned-semester';
 import subject from './modules/subject';
+import subjectAttempt from './modules/subject-attempt';
 
 Vue.use(Vuex);
 
@@ -207,5 +208,6 @@ export default new Vuex.Store({
     user,
     plannedSemester,
     subject,
+    subjectAttempt,
   },
 });

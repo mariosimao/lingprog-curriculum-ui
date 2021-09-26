@@ -15,7 +15,9 @@
     </template>
     <v-card-text class="pa-3 pr-1">
       <div class="d-flex">
-        <div class="text-caption my-0">{{ code }} • {{ credits }}&nbsp;</div>
+        <div class="text-caption my-0">
+          {{ subject(subjectId).code }} • {{ subject(subjectId).credits }}&nbsp;
+        </div>
         <div
           v-if="grade"
           class="text-caption my-0 ">
@@ -27,7 +29,7 @@
         </v-btn>
       </div>
       <p class="font-weight-bold text-body-1 my-0">
-        {{ name }}
+        {{ subject(subjectId).name }}
       </p>
       <p class="text-caption mb-0">
         {{ professor }}
@@ -46,17 +48,9 @@ export default {
       type: String,
       default: '',
     },
-    code: {
+    subjectId: {
       type: String,
       default: '',
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    credits: {
-      type: Number,
-      default: 0,
     },
     professor: {
       type: String,
@@ -66,10 +60,6 @@ export default {
       type: Number,
       default: null,
     },
-    loading: {
-      type: Boolean,
-      default: false,
-    },
   },
   data: () => ({
     showSettings: false,
@@ -77,6 +67,7 @@ export default {
   }),
   computed: {
     ...mapGetters(['isAttemptLoading']),
+    ...mapGetters('subject', ['subject']),
     gradeColor() {
       if (this.grade >= 5) {
         return 'green';
@@ -96,12 +87,13 @@ export default {
       ];
 
       let hash = 0;
-      if (this.code.length === 0) {
+      const { code } = this.subject(this.subjectId);
+      if (code.length === 0) {
         return colors[hash];
       }
-      for (let i = 0; i < this.code.length; i += 1) {
+      for (let i = 0; i < code.length; i += 1) {
         // eslint-disable-next-line no-bitwise
-        hash = this.code.charCodeAt(i) + ((hash << 5) - hash);
+        hash = code.charCodeAt(i) + ((hash << 5) - hash);
         // eslint-disable-next-line no-bitwise
         hash &= hash;
       }

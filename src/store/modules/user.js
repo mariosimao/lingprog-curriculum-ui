@@ -12,6 +12,9 @@ export default {
     user(state) {
       return state.user;
     },
+    userId(state) {
+      return state.user.data.uid;
+    },
   },
   mutations: {
     SET_LOGGED_IN(state, value) {

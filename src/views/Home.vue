@@ -96,9 +96,11 @@ export default {
   computed: {
     ...mapGetters('user', ['user']),
     ...mapGetters('plannedSemester', ['semesters', 'areSemestersLoaded']),
+    ...mapGetters('subject', ['areSubjectsLoaded']),
   },
   methods: {
     ...mapActions('plannedSemester', ['fetchSemesters', 'planSemester']),
+    ...mapActions('subject', ['fetchSubjects']),
     addSemester() {
       this.planSemester({
         studentId: this.user.data.uid,
@@ -113,6 +115,10 @@ export default {
   mounted() {
     if (!this.areSemestersLoaded) {
       this.fetchSemesters(this.user.data.uid);
+    }
+
+    if (!this.areSubjectsLoaded) {
+      this.fetchSubjects();
     }
   },
 };

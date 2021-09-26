@@ -1,13 +1,19 @@
 import client from './client';
 
-const addAttempt = (studentId, semesterId, subjectId) => {
-  const path = `/students/${studentId}/semesters/${semesterId}/attempts`;
+const getSemesterAttempts = (studentId, semesterId) => {
+  const path = `/students/${studentId}/semesters/${semesterId}/subject-attempts`;
 
-  return client.post(path, { subjectId }).then((response) => (response.data.attempt.id));
+  return client.get(path).then((response) => (response.data.subjectAttempts));
+};
+
+const addAttempt = (studentId, semesterId, subjectId) => {
+  const path = `/students/${studentId}/semesters/${semesterId}/subject-attempts`;
+
+  return client.post(path, { subjectId }).then((response) => (response.data.id));
 };
 
 const updateAttempt = (studentId, semesterId, attemptId, newGrade, newProfessor) => {
-  const path = `/students/${studentId}/semesters/${semesterId}/attempts/${attemptId}`;
+  const path = `/students/${studentId}/semesters/${semesterId}/subject-attempts/${attemptId}`;
 
   return client.put(path, {
     grade: newGrade,
@@ -16,12 +22,13 @@ const updateAttempt = (studentId, semesterId, attemptId, newGrade, newProfessor)
 };
 
 const removeAttempt = (studentId, semesterId, attemptId) => {
-  const path = `/students/${studentId}/semesters/${semesterId}/attempts/${attemptId}`;
+  const path = `/students/${studentId}/semesters/${semesterId}/subject-attempts/${attemptId}`;
 
   return client.delete(path);
 };
 
-export default {
+export {
+  getSemesterAttempts,
   addAttempt,
   updateAttempt,
   removeAttempt,

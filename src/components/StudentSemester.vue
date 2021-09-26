@@ -50,10 +50,15 @@
       </v-fade-transition>
       <v-autocomplete
         v-if="operation === 'add-subject'"
+        v-model="addedSubject"
         class="pt-2 shrink"
         dense
         hide-details="auto"
         placeholder="Select subject"
+        :items="subjects"
+        item-text="name"
+        item-value="id"
+        @change="addSubject"
       />
       <!-- Edit Start -->
       <v-expand-transition>
@@ -130,6 +135,16 @@
         </div>
       </v-expand-transition>
       <!-- Edit End -->
+      <div v-for="attempt in semesterAttempts(id)"
+        :key="attempt.id"
+      >
+        <SubjectAttempt
+          :id="attempt.id"
+          :subject-id="attempt.subjectId"
+          :professor="attempt.professor"
+          :grade="attempt.grade"
+        />
+      </div>
       <!-- <draggable
         v-model="attempts"
         group="studentSemester"
@@ -138,8 +153,8 @@
         @end="onDragEnd"
         @choose="onDragStart"
         @unchoose="onDragEnd"
-      >
-        <SubjectAttempt
+      > -->
+        <!-- <SubjectAttempt
           v-for="attempt in attempts"
           :key="attempt.id"
           :id="attempt.id"
@@ -148,8 +163,8 @@
           :credits="attempt.subject.credits"
           :professor="attempt.professor"
           :grade="attempt.grade"
-        />
-      </draggable> -->
+        /> -->
+      <!-- </draggable> -->
     </v-card-text>
   </v-card>
 </template>
@@ -157,10 +172,10 @@
 <script>
 // import draggable from 'vuedraggable';
 import { mapActions, mapGetters } from 'vuex';
-// import SubjectAttempt from './SubjectAttempt.vue';
+import SubjectAttempt from './SubjectAttempt.vue';
 
 export default {
-  components: { },
+  components: { SubjectAttempt },
   name: 'StudentSemester',
   props: {
     id: {
@@ -189,10 +204,13 @@ export default {
     startPicker: false,
     endPicker: false,
     editError: null,
+    addedSubject: null,
   }),
   computed: {
-    ...mapGetters('user', ['user']),
+    ...mapGetters('user', ['user', 'userId']),
     ...mapGetters('plannedSemester', ['isSemesterLoading']),
+    ...mapGetters('subject', ['subjects']),
+    ...mapGetters('subjectAttempt', ['semesterAttempts', 'areSemesterAttemptsLoaded']),
     attempts: {
       get() {
         return this.$store.getters.semesterAttempts(this.id);
@@ -208,6 +226,7 @@ export default {
       'updateSemester',
       'removeSemester',
     ]),
+    ...mapActions('subjectAttempt', ['fetchSemesterAttempts', 'addSubjectAttempt']),
     moveSubject(e) {
       // console.log(e);
       const attemptId = this.attempts[e.newIndex].id;
@@ -224,7 +243,7 @@ export default {
     },
     deleteSemester() {
       this.removeSemester({
-        studentId: this.user.data.uid,
+        studentId: this.userId,
         semesterId: this.id,
       });
     },
@@ -257,6 +276,21 @@ export default {
         this.editError = e.response.data.error.message;
       });
     },
+    addSubject(subjectId) {
+      this.addSubjectAttempt({
+        studentId: this.userId,
+        semesterId: this.id,
+        subjectId,
+      }).then(() => { this.addedSubject = null; });
+    },
+  },
+  mounted() {
+    if (!this.areSemesterAttemptsLoaded(this.id)) {
+      this.fetchSemesterAttempts({
+        studentId: this.userId,
+        semesterId: this.id,
+      });
+    }
   },
 };
 </script>
