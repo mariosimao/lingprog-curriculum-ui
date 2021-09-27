@@ -5,8 +5,8 @@
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
   >
-    <v-card-text class="pa-3 pr-1">
-      <div class="d-flex">
+    <v-card-text class="pa-3">
+      <div v-if="operation === 'view'" class="d-flex">
         <div class="text-caption my-0">
           {{ subject(subjectId).code }} • {{ subject(subjectId).credits }}&nbsp;
         </div>
@@ -47,12 +47,37 @@
           </v-list>
         </v-menu>
       </div>
+      <!-- Edit -->
+      <div v-if="operation === 'edit'" class="d-flex align-center">
+        <div class="text-caption my-0">
+          {{ subject(subjectId).code }} • {{ subject(subjectId).credits }} •
+        </div>
+        <v-text-field
+          placeholder="Grade"
+          dense
+          hide-details
+          class="ma-0 pa-0 ml-1"
+        />
+        <v-spacer/>
+        <v-btn icon x-small @click="cancelEdit">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-btn icon small>
+          <v-icon>mdi-check</v-icon>
+        </v-btn>
+      </div>
       <p class="font-weight-bold text-body-1 my-0">
         {{ subject(subjectId).name }}
       </p>
-      <p class="text-caption mb-0">
+      <p v-if="operation === 'view'" class="text-caption mb-0">
         {{ professor }}
       </p>
+      <v-text-field
+        v-if="operation === 'edit'"
+        dense
+        hide-details
+        placeholder="Professor"
+      />
     </v-card-text>
   </v-card>
 </template>
@@ -85,6 +110,9 @@ export default {
     },
   },
   data: () => ({
+    operation: 'view',
+    newProfessor: null,
+    newGrade: null,
     showSettings: false,
     cardClasses: ['my-3', 'attempt-card'],
   }),
@@ -127,6 +155,12 @@ export default {
   methods: {
     ...mapActions('subjectAttempt', ['removeSubjectAttempt']),
     startEdit() {
+      this.operation = 'edit';
+      this.newProfessor = this.professor;
+      this.newGrade = this.grade;
+    },
+    cancelEdit() {
+      this.operation = 'view';
     },
     remove() {
       this.removeSubjectAttempt({
@@ -138,9 +172,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.attempt-card {
-  cursor: grab;
-};
-</style>
