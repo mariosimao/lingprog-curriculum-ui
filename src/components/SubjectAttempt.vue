@@ -5,15 +5,15 @@
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
   >
-    <v-card-text class="pa-3">
-      <div v-if="operation === 'view'" class="d-flex">
+    <v-card-text v-if="operation === 'view'" class="pa-3">
+      <div class="d-flex">
         <div class="text-caption my-0">
           {{ subject(subjectId).code }} • {{ subject(subjectId).credits }}&nbsp;
         </div>
         <div
           v-if="grade"
           class="text-caption my-0 ">
-          • <span :class="`${gradeColor}--text text--darken-3`">{{ grade }}</span>
+          • <span :class="`${gradeColor}--text text--darken-3`">{{ grade.toFixed(2) }}</span>
         </div>
         <v-spacer/>
         <v-menu
@@ -47,33 +47,43 @@
           </v-list>
         </v-menu>
       </div>
-      <!-- Edit -->
-      <div v-if="operation === 'edit'" class="d-flex align-center">
+      <p class="font-weight-bold text-body-1 my-0">
+        {{ subject(subjectId).name }}
+      </p>
+      <p class="text-caption mb-0">
+        {{ professor }}
+      </p>
+    </v-card-text>
+    <v-card-text v-else-if="operation === 'edit'" class="pa-3">
+      <div v-if="operation === 'edit'" class="d-flex align-center flex-wrap">
         <div class="text-caption my-0">
-          {{ subject(subjectId).code }} • {{ subject(subjectId).credits }} •
+          {{ subject(subjectId).code }} • {{ subject(subjectId).credits }}
         </div>
-        <v-text-field
-          placeholder="Grade"
-          dense
-          hide-details
-          class="ma-0 pa-0 ml-1"
-        />
         <v-spacer/>
         <v-btn icon x-small @click="cancelEdit">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-btn icon small>
+        <v-btn icon x-small color="success" @click="saveEdit">
           <v-icon>mdi-check</v-icon>
         </v-btn>
       </div>
       <p class="font-weight-bold text-body-1 my-0">
         {{ subject(subjectId).name }}
       </p>
-      <p v-if="operation === 'view'" class="text-caption mb-0">
-        {{ professor }}
-      </p>
       <v-text-field
-        v-if="operation === 'edit'"
+        class="mb-1"
+        v-model="newGrade"
+        type="number"
+        step="0.01"
+        solo
+        dense
+        hide-details
+        placeholder="Grade"
+        height="5"
+      />
+      <v-text-field
+        v-model="newProfessor"
+        solo
         dense
         hide-details
         placeholder="Professor"
@@ -153,14 +163,23 @@ export default {
     },
   },
   methods: {
-    ...mapActions('subjectAttempt', ['removeSubjectAttempt']),
+    ...mapActions('subjectAttempt', ['removeSubjectAttempt', 'updateSubjectAttempt']),
     startEdit() {
       this.operation = 'edit';
       this.newProfessor = this.professor;
-      this.newGrade = this.grade;
+      this.newGrade = this.grade?.toFixed(2);
     },
     cancelEdit() {
       this.operation = 'view';
+    },
+    saveEdit() {
+      this.updateSubjectAttempt({
+        studentId: this.userId,
+        semesterId: this.semesterId,
+        attemptId: this.id,
+        newProfessor: this.newProfessor,
+        newGrade: parseFloat(this.newGrade),
+      }).then(() => { this.operation = 'view'; });
     },
     remove() {
       this.removeSubjectAttempt({
