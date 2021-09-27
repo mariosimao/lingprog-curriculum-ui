@@ -6,20 +6,61 @@
       flat
       dark
       color="primary"
+      class="px-2"
     >
-      <v-btn text :to="{ name: 'home' }" class="ma-2">My Curriculum</v-btn>
-      <v-btn text :to="{ name: 'subjects' }">Subjects</v-btn>
-      <v-spacer/>
-      <div v-if="user.data">
-        {{ user.data.displayName }} ({{ user.data.email }})
-      </div>
-      <v-btn
-        v-if="user.loggedIn"
-        text
-        @click="logout"
+      <v-tabs
+        optional
       >
-        Logout
-      </v-btn>
+        <v-tab
+          dark
+          :to="{ name: 'home' }"
+          :ripple="false"
+          min-width="96"
+          text
+        >
+          My Curriculum
+        </v-tab>
+        <v-tab
+          dark
+          :to="{ name: 'subjects' }"
+          :ripple="false"
+          min-width="96"
+          text
+        >
+          Subjects
+        </v-tab>
+      </v-tabs>
+      <v-spacer/>
+      <v-menu
+        v-if="user.loggedIn"
+        bottom
+        min-width="200px"
+        rounded
+        offset-y
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-avatar
+            color="white"
+            size="30"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <span class="primary--text">M</span>
+          </v-avatar>
+        </template>
+        <v-card>
+          <v-card-text class="pa-0 pt-4 text-center">
+            <h3>{{ user.data.displayName }}</h3>
+            <p class="text-caption mt-1">
+              {{ user.data.email }}
+            </p>
+            <v-divider />
+            <v-list dense>
+              <v-list-item @click="logout">Logout</v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-menu>
     </v-app-bar>
     <v-main class="blue-grey lighten-5">
       <notifications class="ma-3" position="top right">
