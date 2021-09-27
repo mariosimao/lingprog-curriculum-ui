@@ -1,4 +1,4 @@
-import { getSemesterAttempts, addAttempt, removeAttempt } from '../../api/subject-attempt';
+import * as api from '../../api/subject-attempt';
 
 export default {
   namespaced: true,
@@ -26,6 +26,16 @@ export default {
 
       state.attempts = attempts;
     },
+    UPDATE_SEMESTER_ATTEMPT(state, { semesterId, attempt }) {
+      const attempts = [...state.attempts[semesterId]];
+      const index = attempts.findIndex((a) => a.id === attempt.id);
+      attempts[index] = attempt;
+
+      state.attempts = {
+        ...state.attempts,
+        [semesterId]: attempts,
+      };
+    },
     REMOVE_SEMESTER_ATTEMPT(state, { semesterId, attemptId }) {
       const attempts = state.attempts[semesterId].filter((attempt) => (attempt.id !== attemptId));
 
@@ -37,14 +47,14 @@ export default {
   },
   actions: {
     fetchSemesterAttempts({ commit }, { studentId, semesterId }) {
-      return getSemesterAttempts(studentId, semesterId).then((attempts) => {
+      return api.getSemesterAttempts(studentId, semesterId).then((attempts) => {
         commit('SET_SEMESTER_ATTEMPTS', { semesterId, attempts });
 
         return attempts;
       });
     },
     addSubjectAttempt({ commit }, { studentId, semesterId, subjectId }) {
-      return addAttempt(studentId, semesterId, subjectId).then((id) => {
+      return api.addAttempt(studentId, semesterId, subjectId).then((id) => {
         const attempt = {
           id,
           subjectId,
@@ -54,8 +64,25 @@ export default {
         commit('ADD_SEMESTER_ATTEMPT', { semesterId, attempt });
       });
     },
+    updateSubjectAttempt({ commit, getters }, {
+      studentId,
+      semesterId,
+      attemptId,
+      newGrade,
+      newProfessor,
+    }) {
+      return api.updateAttempt(studentId, semesterId, attemptId, newGrade, newProfessor).then(
+        () => {
+          const attempt = getters.semesterAttempts(semesterId).find((a) => a.id === attemptId);
+          attempt.professor = newProfessor;
+          attempt.grade = newGrade;
+
+          commit('UPDATE_SEMESTER_ATTEMPT', { semesterId, attempt });
+        },
+      );
+    },
     removeSubjectAttempt({ commit }, { studentId, semesterId, attemptId }) {
-      return removeAttempt(studentId, semesterId, attemptId).then(() => {
+      return api.removeAttempt(studentId, semesterId, attemptId).then(() => {
         commit('REMOVE_SEMESTER_ATTEMPT', { semesterId, attemptId });
       });
     },
