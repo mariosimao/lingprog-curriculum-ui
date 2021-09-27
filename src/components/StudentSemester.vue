@@ -6,134 +6,147 @@
     @mouseleave="showSettings = false"
   >
     <v-card-text>
-      <v-fade-transition>
-        <div
-          v-if="operation === 'view'"
-          class="d-flex align-center"
+      <div
+        v-if="operation === 'view'"
+        class="d-flex align-center"
+      >
+        {{ name }}
+        <v-spacer/>
+        <v-btn v-if="showSettings" x-small icon>
+          <v-icon @click="operation = 'add-subject'">mdi-plus</v-icon>
+        </v-btn>
+        <v-menu
+          bottom
+          left
+          offset-y
         >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              x-small
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item @click="startEdit">
+              <v-list-item-title>
+                <v-icon small left>mdi-pencil</v-icon>
+                Edit
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="deleteSemester">
+              <v-list-item-title>
+                <v-icon small left>mdi-delete</v-icon>
+                Delete
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <div v-if="operation === 'add-subject'">
+        <div class="d-flex align-center">
           {{ name }}
           <v-spacer/>
-          <v-btn v-if="showSettings" x-small icon>
-            <v-icon @click="operation = 'add-subject'">mdi-plus</v-icon>
+          <v-btn x-small icon>
+            <v-icon @click="operation = 'view'">mdi-close</v-icon>
           </v-btn>
-          <v-menu
-            bottom
-            left
-            offset-y
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                x-small
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list dense>
-              <v-list-item @click="startEdit">
-                <v-list-item-title>
-                  <v-icon small left>mdi-pencil</v-icon>
-                  Edit
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="deleteSemester">
-                <v-list-item-title>
-                  <v-icon small left>mdi-delete</v-icon>
-                  Delete
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </div>
-      </v-fade-transition>
-      <v-autocomplete
-        v-if="operation === 'add-subject'"
-        v-model="addedSubject"
-        class="pt-2 shrink"
-        dense
-        hide-details="auto"
-        placeholder="Select subject"
-        :items="subjects"
-        item-text="name"
-        item-value="id"
-        @change="addSubject"
-      />
+        <v-autocomplete
+          v-model="addedSubject"
+          class="pt-2"
+          outlined
+          dense
+          hide-details="auto"
+          placeholder="Search..."
+          :items="subjects"
+          item-text="name"
+          item-value="id"
+          @change="addSubject"
+        />
+      </div>
       <!-- Edit Start -->
-      <v-expand-transition>
-        <div v-if="operation === 'edit'">
-          <p class="error--text mb-0">{{ editError }}</p>
-          <div class="d-flex align-center">
+      <div v-if="operation === 'edit'">
+        <div class="d-flex align-center">
+          {{ newName }}
+          <v-spacer />
+          <v-btn x-small icon @click="cancelEdit" :disabled="isSemesterLoading(id)" class="mr-1">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-btn x-small icon color="green" @click="saveEdit" :loading="isSemesterLoading(id)">
+            <v-icon>mdi-check</v-icon>
+          </v-btn>
+        </div>
+        <p class="error--text mb-0">{{ editError }}</p>
+        <v-text-field
+          v-model="newName"
+          class="pt-2"
+          outlined
+          dense
+          hide-details
+          :error-messages="editError"
+          prepend-inner-icon="mdi-text"
+          placeholder="Name"
+        />
+        <v-menu
+          v-model="startPicker"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
             <v-text-field
-              v-model="newName"
+              v-model="newStart"
+              class="mt-2"
+              outlined
               dense
+              prepend-inner-icon="mdi-calendar"
+              readonly
               hide-details
               :error-messages="editError"
-              prepend-icon="mdi-text"
-              placeholder="Semester name"
+              v-bind="attrs"
+              v-on="on"
             />
-            <v-btn x-small icon @click="cancelEdit" :disabled="isSemesterLoading(id)">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-btn small icon color="green" @click="saveEdit" :loading="isSemesterLoading(id)">
-              <v-icon>mdi-check</v-icon>
-            </v-btn>
-          </div>
-          <v-menu
-            v-model="startPicker"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="newStart"
-                dense
-                prepend-icon="mdi-calendar"
-                readonly
-                hide-details
-                :error-messages="editError"
-                v-bind="attrs"
-                v-on="on"
-              />
-            </template>
-            <v-date-picker
-              v-model="newStart"
-              no-title
-              @input="startPicker = false"
-            />
-          </v-menu>
-          <v-menu
-            v-model="endPicker"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="newEnd"
-                dense
-                prepend-icon="mdi-calendar"
-                hide-details
-                readonly
-                :error-messages="editError"
-                v-bind="attrs"
-                v-on="on"
-              />
-            </template>
-            <v-date-picker
+          </template>
+          <v-date-picker
+            v-model="newStart"
+            no-title
+            @input="startPicker = false"
+          />
+        </v-menu>
+        <v-menu
+          v-model="endPicker"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
               v-model="newEnd"
-              no-title
-              @input="endPicker = false"
+              class="mt-2"
+              outlined
+              dense
+              prepend-inner-icon="mdi-calendar"
+              hide-details
+              readonly
+              :error-messages="editError"
+              v-bind="attrs"
+              v-on="on"
             />
-          </v-menu>
-        </div>
-      </v-expand-transition>
+          </template>
+          <v-date-picker
+            v-model="newEnd"
+            no-title
+            @input="endPicker = false"
+          />
+        </v-menu>
+      </div>
       <!-- Edit End -->
       <div v-for="attempt in semesterAttempts(id)"
         :key="attempt.id"
