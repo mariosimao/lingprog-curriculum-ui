@@ -1,7 +1,7 @@
 <template>
   <v-card
-    class="my-3"
     min-width="200"
+    max-width="200"
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
   >
