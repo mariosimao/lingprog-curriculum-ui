@@ -75,7 +75,9 @@
           </v-alert>
         </template>
       </notifications>
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
     </v-main>
   </v-app>
 </template>
