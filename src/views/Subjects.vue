@@ -26,7 +26,6 @@
       <v-col class="d-flex align-center justify-center">
         <AddSubjectCard
           @cancel="addingSubject = false"
-          @add="addingSubject = false"
         />
       </v-col>
     </v-row>
