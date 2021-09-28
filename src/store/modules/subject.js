@@ -1,4 +1,5 @@
 import {
+  createSubject,
   getSubjects,
 } from '../../api/subject';
 
@@ -24,10 +25,10 @@ export default {
       state.subjects = subjects;
     },
     ADD_SUBJECT(state, subject) {
-      const subjects = {
+      const subjects = [
         ...state.subjects,
         subject,
-      };
+      ];
 
       state.subjects = subjects;
     },
@@ -78,6 +79,18 @@ export default {
         commit('SET_SUBJECTS_STATUS', 'loaded');
       }).catch(() => {
         commit('SET_SUBJECTS_STATUS', 'error');
+      });
+    },
+    addSubject({ commit }, { code, name, credits }) {
+      return createSubject(code, name, credits).then((id) => {
+        const subject = {
+          id, code, name, credits,
+        };
+
+        commit('ADD_SUBJECT', subject);
+        commit('SET_SUBJECT_LOADED', id);
+
+        return id;
       });
     },
     // planSubject({ commit }, { studentId, startDate, endDate }) {

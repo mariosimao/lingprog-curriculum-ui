@@ -22,6 +22,14 @@
         </v-btn>
       </v-col>
     </v-row>
+    <v-row v-if="addingSubject" justify="center" align="center">
+      <v-col class="d-flex align-center justify-center">
+        <AddSubjectCard
+          @cancel="addingSubject = false"
+          @add="addingSubject = false"
+        />
+      </v-col>
+    </v-row>
     <div class="d-flex flex-wrap justify-center mt-2 pt-3">
       <Subject
         v-for="subject in filteredSubjects"
@@ -38,16 +46,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import AddSubjectCard from '../components/AddSubjectCard.vue';
 import Subject from '../components/Subject.vue';
 
 export default {
   name: 'Subjects',
 
   components: {
+    AddSubjectCard,
     Subject,
   },
   data: () => ({
     search: '',
+    addingSubject: false,
   }),
   computed: {
     ...mapGetters('user', ['user']),
