@@ -69,7 +69,6 @@
             type="error"
             border="left"
             dense
-            outlined
           >
             {{ item.text }}
           </v-alert>
