@@ -8,7 +8,7 @@ import firebase from './plugins/firebase';
 
 firebase.auth().onAuthStateChanged((user) => {
   store.dispatch('user/updateUser', user);
-  if (firebase.auth().currentUser) {
+  if (user) {
     router.replace({ name: 'home' });
   } else {
     const authRequired = router.currentRoute?.meta?.authRequired;

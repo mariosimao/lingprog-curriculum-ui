@@ -11,6 +11,6 @@ const firebaseConfig = {
   appId: '1:289677214857:web:8fb49cae9c5f377e3bb258',
 };
 firebase.initializeApp(firebaseConfig);
-firebase.auth().setPersistence('local');
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 export default firebase;
