@@ -148,48 +148,33 @@
         </v-menu>
       </div>
       <!-- Edit End -->
-      <div v-for="attempt in semesterAttempts(id)"
-        :key="attempt.id"
+      <draggable
+        :id="this.id"
+        v-model="attempts"
+        group="studentSemester"
+        @add="moveSubject"
       >
         <SubjectAttempt
+          v-for="attempt in attempts"
+          :key="attempt.id"
           :id="attempt.id"
           :semester-id="id"
           :subject-id="attempt.subjectId"
           :professor="attempt.professor"
           :grade="attempt.grade"
         />
-      </div>
-      <!-- <draggable
-        v-model="attempts"
-        group="studentSemester"
-        @add="moveSubject"
-        @start="onDragStart"
-        @end="onDragEnd"
-        @choose="onDragStart"
-        @unchoose="onDragEnd"
-      > -->
-        <!-- <SubjectAttempt
-          v-for="attempt in attempts"
-          :key="attempt.id"
-          :id="attempt.id"
-          :code="attempt.subject.code"
-          :name="attempt.subject.name"
-          :credits="attempt.subject.credits"
-          :professor="attempt.professor"
-          :grade="attempt.grade"
-        /> -->
-      <!-- </draggable> -->
+      </draggable>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-// import draggable from 'vuedraggable';
+import Draggable from 'vuedraggable';
 import { mapActions, mapGetters } from 'vuex';
 import SubjectAttempt from './SubjectAttempt.vue';
 
 export default {
-  components: { SubjectAttempt },
+  components: { SubjectAttempt, Draggable },
   name: 'StudentSemester',
   props: {
     id: {
@@ -225,13 +210,28 @@ export default {
     ...mapGetters('plannedSemester', ['isSemesterLoading']),
     ...mapGetters('subject', ['subjects']),
     ...mapGetters('subjectAttempt', ['semesterAttempts', 'areSemesterAttemptsLoaded']),
+    attempts: {
+      get() {
+        return this.semesterAttempts(this.id);
+      },
+      set(value) {
+        this.$store.commit('subjectAttempt/SET_SEMESTER_ATTEMPTS', {
+          semesterId: this.id,
+          attempts: value,
+        });
+      },
+    },
   },
   methods: {
     ...mapActions('plannedSemester', [
       'updateSemester',
       'removeSemester',
     ]),
-    ...mapActions('subjectAttempt', ['fetchSemesterAttempts', 'addSubjectAttempt']),
+    ...mapActions('subjectAttempt', [
+      'fetchSemesterAttempts',
+      'addSubjectAttempt',
+      'moveSubjectAttempt',
+    ]),
     deleteSemester() {
       this.removeSemester({
         studentId: this.userId,
@@ -273,6 +273,14 @@ export default {
         semesterId: this.id,
         subjectId,
       }).then(() => { this.addedSubject = null; });
+    },
+    moveSubject(event) {
+      this.moveSubjectAttempt({
+        studentId: this.userId,
+        attemptId: event.item.id,
+        oldSemesterId: event.from.id,
+        newSemesterId: event.to.id,
+      });
     },
   },
   mounted() {

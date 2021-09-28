@@ -71,19 +71,39 @@ export default {
       newGrade,
       newProfessor,
     }) {
-      return api.updateAttempt(studentId, semesterId, attemptId, newGrade, newProfessor).then(
-        () => {
-          const attempt = getters.semesterAttempts(semesterId).find((a) => a.id === attemptId);
-          attempt.professor = newProfessor;
-          attempt.grade = newGrade;
+      return api.updateAttempt(
+        studentId, semesterId, attemptId, newGrade, newProfessor, semesterId,
+      ).then(() => {
+        const attempt = getters.semesterAttempts(semesterId).find((a) => a.id === attemptId);
+        attempt.professor = newProfessor;
+        attempt.grade = newGrade;
 
-          commit('UPDATE_SEMESTER_ATTEMPT', { semesterId, attempt });
-        },
-      );
+        commit('UPDATE_SEMESTER_ATTEMPT', { semesterId, attempt });
+      });
     },
     removeSubjectAttempt({ commit }, { studentId, semesterId, attemptId }) {
       return api.removeAttempt(studentId, semesterId, attemptId).then(() => {
         commit('REMOVE_SEMESTER_ATTEMPT', { semesterId, attemptId });
+      });
+    },
+    moveSubjectAttempt({ state, commit }, {
+      studentId,
+      attemptId,
+      oldSemesterId,
+      newSemesterId,
+    }) {
+      const attempt = state.attempts[newSemesterId].find((a) => a.id === attemptId);
+
+      return api.updateAttempt(
+        studentId, oldSemesterId, attemptId, attempt.grade, attempt.professor, newSemesterId,
+      ).catch((e) => {
+        // eslint-disable-next-line no-underscore-dangle
+        this._vm.$notify({
+          text: e.response.data.error.message,
+        });
+
+        commit('REMOVE_SEMESTER_ATTEMPT', { semesterId: newSemesterId, attemptId });
+        commit('ADD_SEMESTER_ATTEMPT', { semesterId: oldSemesterId, attempt });
       });
     },
   },

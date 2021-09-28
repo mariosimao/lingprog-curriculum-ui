@@ -1,5 +1,6 @@
 <template>
   <v-card
+    :id="id"
     :class="cardClasses"
     :color="cardColor"
     @mouseover="showSettings = true"

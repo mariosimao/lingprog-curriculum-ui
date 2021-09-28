@@ -12,12 +12,13 @@ const addAttempt = (studentId, semesterId, subjectId) => {
   return client.post(path, { subjectId }).then((response) => (response.data.id));
 };
 
-const updateAttempt = (studentId, semesterId, attemptId, newGrade, newProfessor) => {
+const updateAttempt = (studentId, semesterId, attemptId, newGrade, newProfessor, newSemesterId) => {
   const path = `/students/${studentId}/semesters/${semesterId}/subject-attempts/${attemptId}`;
 
   return client.put(path, {
     grade: newGrade,
     professor: newProfessor,
+    semesterId: newSemesterId,
   });
 };
 
