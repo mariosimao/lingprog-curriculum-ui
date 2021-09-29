@@ -18,6 +18,7 @@
             prepend-inner-icon="mdi-calendar"
             readonly
             hide-details
+            :disabled="loading"
             v-bind="attrs"
             v-on="on"
           ></v-text-field>
@@ -46,6 +47,7 @@
             prepend-inner-icon="mdi-calendar"
             readonly
             hide-details
+            :disabled="loading"
             v-bind="attrs"
             v-on="on"
           ></v-text-field>
@@ -59,10 +61,20 @@
     </v-card-text>
     <v-card-actions class="pa-4 pt-0">
       <v-spacer />
-      <v-btn @click="cancel" text small>
+      <v-btn
+        text
+        small
+        :disabled="loading"
+        @click="cancel"
+      >
         Cancel
       </v-btn>
-      <v-btn @click="addSemester" color="primary" small>
+      <v-btn
+        color="primary"
+        small
+        :loading="loading"
+        @click="addSemester"
+      >
         Add
       </v-btn>
     </v-card-actions>
@@ -80,6 +92,7 @@ export default {
     endDate: null,
     startPicker: false,
     endPicker: false,
+    loading: false,
   }),
   computed: {
     ...mapGetters('user', ['userId']),
@@ -87,6 +100,8 @@ export default {
   methods: {
     ...mapActions('plannedSemester', ['planSemester']),
     addSemester() {
+      this.loading = true;
+
       this.planSemester({
         studentId: this.userId,
         startDate: this.startDate,
@@ -94,6 +109,7 @@ export default {
       }).then(() => {
         this.startDate = null;
         this.endDate = null;
+        this.loading = false;
         this.$emit('add');
       });
     },
