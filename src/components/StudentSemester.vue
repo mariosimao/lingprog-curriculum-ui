@@ -4,6 +4,8 @@
     max-width="200"
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
+    :loading="isSemesterLoading(id)"
+    :disabled="isSemesterLoading(id)"
   >
     <v-card-text>
       <div
@@ -87,6 +89,7 @@
           dense
           hide-details
           :error-messages="editError"
+          :disabled="isSemesterLoading(id)"
           prepend-inner-icon="mdi-text"
           placeholder="Name"
         />
@@ -108,6 +111,7 @@
               readonly
               hide-details
               :error-messages="editError"
+              :disabled="isSemesterLoading(id)"
               v-bind="attrs"
               v-on="on"
             />
@@ -135,6 +139,7 @@
               prepend-inner-icon="mdi-calendar"
               hide-details
               readonly
+              :disabled="isSemesterLoading(id)"
               :error-messages="editError"
               v-bind="attrs"
               v-on="on"
