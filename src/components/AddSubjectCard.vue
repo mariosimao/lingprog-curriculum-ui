@@ -66,10 +66,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.compact {
-  transform: scale(0.7);
-  transform-origin: left;
-}
-</style>
