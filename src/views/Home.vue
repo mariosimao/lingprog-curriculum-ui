@@ -17,6 +17,46 @@
         />
       </v-col>
     </v-row>
+    <v-row
+      v-if="areSemestersLoaded && semesters.length === 0"
+      class="fill-height"
+      align-content="center"
+      justify="center"
+    >
+      <v-col
+        v-if="!addingSemester"
+        cols="12"
+        class="text-center"
+      >
+        <p class="text-h5 grey--text text--darken-1 mb-0">
+          <v-icon x-large>mdi-ghost-outline</v-icon>
+          No semester has been registered yet
+        </p>
+      </v-col>
+      <v-col
+        v-if="!addingSemester"
+        cols="12"
+        class="d-flex justify-center"
+      >
+        <v-btn
+          color="primary"
+          @click="addingSemester = true"
+        >
+          Plan semester
+        </v-btn>
+      </v-col>
+      <v-col
+        v-if="addingSemester"
+        cols="12"
+        class="d-flex justify-center"
+      >
+        <AddSemesterCard
+          class="mx-2"
+          @add="addingSemester = false"
+          @cancel="addingSemester = false"
+        />
+      </v-col>
+    </v-row>
     <StudentSemester
       v-for="semester in semesters"
       :key="semester.id"
@@ -27,12 +67,12 @@
       class="mx-2"
     />
     <AddSemesterButton
-      v-if="!areSemestersLoading && !addingSemester"
+      v-if="!areSemestersLoading && !addingSemester && semesters.length > 0"
       class="mx-2"
       @click="addingSemester = true"
     />
     <AddSemesterCard
-      v-if="!areSemestersLoading && addingSemester"
+      v-if="!areSemestersLoading && addingSemester && semesters.length > 0"
       class="mx-2"
       @add="addingSemester = false"
       @cancel="addingSemester = false"
