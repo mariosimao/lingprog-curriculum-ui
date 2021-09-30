@@ -50,7 +50,7 @@
           </v-list>
         </v-menu>
       </div>
-      <p class="font-weight-bold text-body-1 my-0">
+      <p class="font-weight-bold text-body-1 my-0 text-truncate">
         {{ subject(subjectId).name }}
       </p>
       <p class="text-caption mb-0">
@@ -70,7 +70,7 @@
           <v-icon>mdi-check</v-icon>
         </v-btn>
       </div>
-      <p class="font-weight-bold text-body-1 my-0">
+      <p class="font-weight-bold text-body-1 my-0 text-truncate">
         {{ subject(subjectId).name }}
       </p>
       <v-text-field
