@@ -4,10 +4,12 @@ export default {
   namespaced: true,
   state: {
     attempts: {},
+    attemptStatus: {},
   },
   getters: {
     semesterAttempts: (state) => (semesterId) => (state.attempts[semesterId]),
     areSemesterAttemptsLoaded: (state) => (semesterId) => (semesterId in state.attempts),
+    isAttemptLoading: (state) => (attemptId) => (state.attemptStatus[attemptId] === 'loading'),
   },
   mutations: {
     SET_SEMESTER_ATTEMPTS(state, { semesterId, attempts }) {
@@ -43,12 +45,27 @@ export default {
         ...state.attempts,
         [semesterId]: attempts,
       };
+
+      const statuses = { ...state.attemptStatus };
+      delete statuses[attemptId];
+
+      state.attemptStatus = statuses;
+    },
+    SET_ATTEMPT_STATUS(state, { attemptId, status }) {
+      state.attemptStatus = {
+        ...state.attemptStatus,
+        [attemptId]: status,
+      };
     },
   },
   actions: {
     fetchSemesterAttempts({ commit }, { studentId, semesterId }) {
       return api.getSemesterAttempts(studentId, semesterId).then((attempts) => {
         commit('SET_SEMESTER_ATTEMPTS', { semesterId, attempts });
+
+        attempts.forEach((a) => {
+          commit('SET_ATTEMPT_STATUS', { attemptId: a.id, status: 'loaded' });
+        });
 
         return attempts;
       });
@@ -62,6 +79,7 @@ export default {
           professor: null,
         };
         commit('ADD_SEMESTER_ATTEMPT', { semesterId, attempt });
+        commit('SET_ATTEMPT_STATUS', { attemptId: id, status: 'loaded' });
       });
     },
     updateSubjectAttempt({ commit, getters }, {
@@ -71,6 +89,8 @@ export default {
       newGrade,
       newProfessor,
     }) {
+      commit('SET_ATTEMPT_STATUS', { attemptId, status: 'loading' });
+
       return api.updateAttempt(
         studentId, semesterId, attemptId, newGrade, newProfessor, semesterId,
       ).then(() => {
@@ -79,9 +99,12 @@ export default {
         attempt.grade = newGrade;
 
         commit('UPDATE_SEMESTER_ATTEMPT', { semesterId, attempt });
+        commit('SET_ATTEMPT_STATUS', { attemptId, status: 'loaded' });
       });
     },
     removeSubjectAttempt({ commit }, { studentId, semesterId, attemptId }) {
+      commit('SET_ATTEMPT_STATUS', { attemptId, status: 'loading' });
+
       return api.removeAttempt(studentId, semesterId, attemptId).then(() => {
         commit('REMOVE_SEMESTER_ATTEMPT', { semesterId, attemptId });
       });
@@ -92,11 +115,15 @@ export default {
       oldSemesterId,
       newSemesterId,
     }) {
+      commit('SET_ATTEMPT_STATUS', { attemptId, status: 'loading' });
+
       const attempt = state.attempts[newSemesterId].find((a) => a.id === attemptId);
 
       return api.updateAttempt(
         studentId, oldSemesterId, attemptId, attempt.grade, attempt.professor, newSemesterId,
-      ).catch((e) => {
+      ).then(() => {
+        commit('SET_ATTEMPT_STATUS', { attemptId, status: 'loaded' });
+      }).catch((e) => {
         // eslint-disable-next-line no-underscore-dangle
         this._vm.$notify({
           text: e.response.data.error.message,
@@ -104,6 +131,7 @@ export default {
 
         commit('REMOVE_SEMESTER_ATTEMPT', { semesterId: newSemesterId, attemptId });
         commit('ADD_SEMESTER_ATTEMPT', { semesterId: oldSemesterId, attempt });
+        commit('SET_ATTEMPT_STATUS', { attemptId, status: 'error' });
       });
     },
   },

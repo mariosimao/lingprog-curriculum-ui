@@ -58,12 +58,14 @@
         </div>
         <v-autocomplete
           v-model="addedSubject"
+          :items="subjects"
+          :loading="addingSubject"
+          :disabled="addingSubject"
           class="pt-2"
           outlined
           dense
           hide-details="auto"
           placeholder="Search..."
-          :items="subjects"
           item-text="name"
           item-value="id"
           @change="addSubject"
@@ -209,6 +211,7 @@ export default {
     endPicker: false,
     editError: null,
     addedSubject: null,
+    addingSubject: false,
   }),
   computed: {
     ...mapGetters('user', ['user', 'userId']),
@@ -273,11 +276,16 @@ export default {
       });
     },
     addSubject(subjectId) {
+      this.addingSubject = true;
+
       this.addSubjectAttempt({
         studentId: this.userId,
         semesterId: this.id,
         subjectId,
-      }).then(() => { this.addedSubject = null; });
+      }).then(() => {
+        this.addingSubject = false;
+        this.addedSubject = null;
+      });
     },
     moveSubject(event) {
       this.moveSubjectAttempt({

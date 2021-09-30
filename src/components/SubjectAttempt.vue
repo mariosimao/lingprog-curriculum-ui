@@ -3,6 +3,8 @@
     :id="id"
     :class="cardClasses"
     :color="cardColor"
+    :loading="isAttemptLoading(id) ? 'primary' : false"
+    :disabled="isAttemptLoading(id)"
     @mouseover="showSettings = true"
     @mouseleave="showSettings = false"
   >
@@ -75,7 +77,7 @@
         class="mb-1"
         v-model="newGrade"
         type="number"
-        step="0.01"
+        step="0.1"
         solo
         dense
         hide-details
@@ -131,6 +133,7 @@ export default {
   computed: {
     ...mapGetters('user', ['userId']),
     ...mapGetters('subject', ['subject']),
+    ...mapGetters('subjectAttempt', ['isAttemptLoading']),
     gradeColor() {
       if (this.grade >= 5) {
         return 'green';
