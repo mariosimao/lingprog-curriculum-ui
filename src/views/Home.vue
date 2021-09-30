@@ -1,5 +1,22 @@
 <template>
   <v-container fluid class="d-flex semesters align-start">
+    <v-row
+      v-if="areSemestersLoading"
+      class="fill-height"
+      align-content="center"
+      justify="center"
+    >
+      <v-col cols="12" class="text-center">
+        Fetching semesters...
+      </v-col>
+      <v-col cols="6">
+        <v-progress-linear
+          indeterminate
+          rounded
+          height="6"
+        />
+      </v-col>
+    </v-row>
     <StudentSemester
       v-for="semester in semesters"
       :key="semester.id"
@@ -10,12 +27,12 @@
       class="mx-2"
     />
     <AddSemesterButton
-      v-if="!addingSemester"
+      v-if="!areSemestersLoading && !addingSemester"
       class="mx-2"
       @click="addingSemester = true"
     />
     <AddSemesterCard
-      v-if="addingSemester"
+      v-if="!areSemestersLoading && addingSemester"
       class="mx-2"
       @add="addingSemester = false"
       @cancel="addingSemester = false"
@@ -41,7 +58,11 @@ export default {
   }),
   computed: {
     ...mapGetters('user', ['user']),
-    ...mapGetters('plannedSemester', ['semesters', 'areSemestersLoaded']),
+    ...mapGetters('plannedSemester', [
+      'semesters',
+      'areSemestersLoaded',
+      'areSemestersLoading',
+    ]),
     ...mapGetters('subject', ['areSubjectsLoaded']),
   },
   methods: {

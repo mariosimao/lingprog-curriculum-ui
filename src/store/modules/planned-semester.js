@@ -21,6 +21,9 @@ export default {
     areSemestersLoaded(state) {
       return state.semestersStatus === 'loaded';
     },
+    areSemestersLoading(state) {
+      return state.semestersStatus === 'loading';
+    },
   },
   mutations: {
     SET_SEMESTERS(state, semesters) {
@@ -80,7 +83,7 @@ export default {
       };
     },
     SET_SEMESTERS_STATUS(state, status) {
-      state.semesterStatus = status;
+      state.semestersStatus = status;
     },
   },
   actions: {
