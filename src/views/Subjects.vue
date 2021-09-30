@@ -68,8 +68,8 @@ export default {
       }
 
       return this.subjects.filter((s) => {
-        const matchCode = s.code.includes(this.search);
-        const matchName = s.name.includes(this.search);
+        const matchCode = s.code.toUpperCase().includes(this.search.toUpperCase());
+        const matchName = s.name.toUpperCase().includes(this.search.toUpperCase());
 
         return matchCode || matchName;
       });
