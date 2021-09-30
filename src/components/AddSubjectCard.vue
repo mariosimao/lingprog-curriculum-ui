@@ -3,6 +3,7 @@
     <v-card-text>
       <v-text-field
         v-model="name"
+        :disabled="loading"
         class="mb-3"
         solo
         dense
@@ -13,6 +14,7 @@
         <v-col>
           <v-text-field
             v-model="code"
+            :disabled="loading"
             solo
             dense
             hide-details
@@ -22,6 +24,7 @@
         <v-col>
           <v-text-field
             v-model="credits"
+            :disabled="loading"
             solo
             dense
             hide-details
@@ -34,10 +37,10 @@
     </v-card-text>
     <v-card-actions class="pa-4 pt-0">
       <v-spacer />
-      <v-btn text small @click="$emit('cancel')">
+      <v-btn text small :disabled="loading" @click="$emit('cancel')">
         Cancel
       </v-btn>
-      <v-btn color="primary" small @click="add">
+      <v-btn color="primary" :loading="loading" small @click="add">
         Add
       </v-btn>
     </v-card-actions>
@@ -53,15 +56,21 @@ export default {
     name: null,
     code: null,
     credits: null,
+    loading: false,
   }),
   methods: {
     ...mapActions('subject', ['addSubject']),
     add() {
+      this.loading = true;
+
       this.addSubject({
         code: this.code,
         name: this.name,
         credits: parseInt(this.credits, 10),
-      }).then(() => { this.$emit('add'); });
+      }).then(() => {
+        this.loading = false;
+        this.$emit('add');
+      });
     },
   },
 };
