@@ -20,7 +20,14 @@ const createSubject = (code, name, credits) => {
   ).then((response) => (response.data.id));
 };
 
+const deleteSubject = (subjectId) => {
+  const path = `/subjects/${subjectId}`;
+
+  return client.delete(path);
+};
+
 export {
   getSubjects,
   createSubject,
+  deleteSubject,
 };

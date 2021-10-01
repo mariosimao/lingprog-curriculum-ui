@@ -1,5 +1,6 @@
 import {
   createSubject,
+  deleteSubject,
   getSubjects,
 } from '../../api/subject';
 
@@ -91,6 +92,13 @@ export default {
         commit('SET_SUBJECT_LOADED', id);
 
         return id;
+      });
+    },
+    removeSubject({ commit }, { subjectId }) {
+      commit('SET_SUBJECT_LOADING', subjectId);
+
+      return deleteSubject(subjectId).then(() => {
+        commit('REMOVE_SUBJECT', subjectId);
       });
     },
     // planSubject({ commit }, { studentId, startDate, endDate }) {
