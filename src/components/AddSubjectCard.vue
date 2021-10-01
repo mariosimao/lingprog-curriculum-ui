@@ -1,15 +1,6 @@
 <template>
   <v-card max-width="250" color="grey lighten-2">
     <v-card-text>
-      <v-text-field
-        v-model="name"
-        :disabled="loading"
-        class="mb-3"
-        solo
-        dense
-        hide-details
-        placeholder="Name"
-      />
       <v-row>
         <v-col>
           <v-text-field
@@ -18,7 +9,8 @@
             solo
             dense
             hide-details
-            placeholder="Code"
+            label="Code"
+            placeholder="EEL-123"
           />
         </v-col>
         <v-col>
@@ -28,12 +20,24 @@
             solo
             dense
             hide-details
-            placeholder="Credits"
+            label="Credits"
+            placeholder="4"
             type="number"
             step="1"
+            min="1"
           />
         </v-col>
       </v-row>
+      <v-text-field
+        v-model="name"
+        :disabled="loading"
+        class="mt-3"
+        solo
+        dense
+        hide-details
+        label="Name"
+        placeholder="Eletrônica II"
+      />
     </v-card-text>
     <v-card-actions class="pa-4 pt-0">
       <v-spacer />
