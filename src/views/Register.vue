@@ -1,59 +1,61 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col class="d-flex flex-column justify-center align-center">
-      <v-card width="450">
-        <v-card-text class="pt-8 px-8 pb-3">
-          <h1 class="text-center pb-6">My Curriculum</h1>
-          <p>Register and start planning your semester.</p>
-          <form @submit.prevent="register">
-            <v-text-field
-              v-model="name"
-              :class="error.name ? 'pb-0' : 'pb-3'"
-              :error-messages="error.name"
-              outlined
-              label="Name"
-              hide-details="auto"
-            />
-            <v-text-field
-              v-model="email"
-              :class="error.email ? 'pb-0' : 'pb-3'"
-              :error-messages="error.email"
-              outlined
-              label="Email"
-              hide-details="auto"
-            />
-            <v-text-field
-              v-model="password"
-              :class="error.password ? 'pb-0' : 'pb-3'"
-              :error-messages="error.password"
-              :type="showPassword ? 'text' : 'password'"
-              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-              outlined
-              label="Password"
-              hide-details="auto"
-              @click:append="showPassword = !showPassword"
-            />
-            <v-btn
-              :loading="loadingRegister"
-              type="submit"
-              color="blue"
-              block
-              dark
-            >
-              Register
-            </v-btn>
-          </form>
-          <p class="pt-2 mb-0 red--text">
-            {{ error.generic }}
-          </p>
-          <p class="pt-6 text-center">
-            Already have an account?
-            <router-link :to="{ name: 'login' }">Sign in instead</router-link>
-          </p>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-container fill-height>
+    <v-row justify="center" align="center">
+      <v-col class="d-flex flex-column justify-center align-center">
+        <v-card width="450">
+          <v-card-text class="pt-8 px-8 pb-3">
+            <h1 class="text-center pb-6">🎓 My Curriculum</h1>
+            <p>Register and start planning your semester.</p>
+            <form @submit.prevent="register">
+              <v-text-field
+                v-model="name"
+                :class="error.name ? 'pb-0' : 'pb-3'"
+                :error-messages="error.name"
+                outlined
+                label="Name"
+                hide-details="auto"
+              />
+              <v-text-field
+                v-model="email"
+                :class="error.email ? 'pb-0' : 'pb-3'"
+                :error-messages="error.email"
+                outlined
+                label="Email"
+                hide-details="auto"
+              />
+              <v-text-field
+                v-model="password"
+                :class="error.password ? 'pb-0' : 'pb-3'"
+                :error-messages="error.password"
+                :type="showPassword ? 'text' : 'password'"
+                :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                outlined
+                label="Password"
+                hide-details="auto"
+                @click:append="showPassword = !showPassword"
+              />
+              <v-btn
+                :loading="loadingRegister"
+                type="submit"
+                color="blue"
+                block
+                dark
+              >
+                Register
+              </v-btn>
+            </form>
+            <p class="pt-2 mb-0 red--text">
+              {{ error.generic }}
+            </p>
+            <p class="pt-6 text-center">
+              Already have an account?
+              <router-link :to="{ name: 'login' }">Sign in instead</router-link>
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
