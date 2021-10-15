@@ -12,5 +12,5 @@ jobs:
       uses: xRealNeon/VuePagesAction@1.0.0
       with:
         username: 'mariosimao'
-        reponame: 'lingprog-my-study-plan-ui'
+        reponame: 'my-study-plan'
         token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
