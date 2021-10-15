@@ -92,7 +92,7 @@ export default {
         commit('SET_SUBJECT_LOADED', id);
 
         return id;
-      });
+      }).catch((e) => { throw e.response.data.error; });
     },
     removeSubject({ commit }, { subjectId }) {
       commit('SET_SUBJECT_LOADING', subjectId);

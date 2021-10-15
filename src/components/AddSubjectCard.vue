@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="250" color="grey lighten-2">
+  <v-card max-width="260" color="grey lighten-2">
     <v-card-text>
       <v-row>
         <v-col>
@@ -38,13 +38,20 @@
         label="Name"
         placeholder="Eletrônica II"
       />
+      <p class="error--text pt-2 mb-0">{{ error }}</p>
     </v-card-text>
     <v-card-actions class="pa-4 pt-0">
       <v-spacer />
       <v-btn text small :disabled="loading" @click="$emit('cancel')">
         Cancel
       </v-btn>
-      <v-btn color="primary" :loading="loading" small @click="add">
+      <v-btn
+        :loading="loading"
+        :disabled="!name || !code || !credits"
+        color="primary"
+        small
+        @click="add"
+      >
         Add
       </v-btn>
     </v-card-actions>
@@ -61,11 +68,13 @@ export default {
     code: null,
     credits: null,
     loading: false,
+    error: null,
   }),
   methods: {
     ...mapActions('subject', ['addSubject']),
     add() {
       this.loading = true;
+      this.error = null;
 
       this.addSubject({
         code: this.code,
@@ -74,6 +83,9 @@ export default {
       }).then(() => {
         this.loading = false;
         this.$emit('add');
+      }).catch((error) => {
+        this.error = error.message;
+        this.loading = false;
       });
     },
   },
