@@ -4,7 +4,7 @@
       <v-col class="d-flex flex-column justify-center align-center">
         <v-card width="450">
           <v-card-text class="pt-8 px-8 pb-3">
-            <h1 class="text-center pb-6">🎓 My Curriculum</h1>
+            <h1 class="text-center pb-6">🎓 My study plan</h1>
             <p>Sign in and start planning your semester.</p>
             <form @submit.prevent="login">
               <v-text-field

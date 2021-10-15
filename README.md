@@ -1,4 +1,4 @@
-# lingprog-curriculum-ui
+# My study plan UI
 
 ## Project setup
 ```

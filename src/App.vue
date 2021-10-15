@@ -19,7 +19,7 @@
           min-width="96"
           text
         >
-          My Curriculum
+          My study plan
         </v-tab>
         <v-tab
           dark
