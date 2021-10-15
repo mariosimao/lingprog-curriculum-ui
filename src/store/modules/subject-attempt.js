@@ -80,6 +80,11 @@ export default {
         };
         commit('ADD_SEMESTER_ATTEMPT', { semesterId, attempt });
         commit('SET_ATTEMPT_STATUS', { attemptId: id, status: 'loaded' });
+      }).catch((e) => {
+        // eslint-disable-next-line no-underscore-dangle
+        this._vm.$notify({
+          text: e.response.data.error.message,
+        });
       });
     },
     updateSubjectAttempt({ commit, getters }, {
