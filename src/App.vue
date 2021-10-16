@@ -46,7 +46,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <span class="primary--text">M</span>
+            <span class="primary--text">{{ user.data.displayName[0].toUpperCase() }}</span>
           </v-avatar>
         </template>
         <v-card>
